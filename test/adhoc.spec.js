@@ -90,6 +90,20 @@ describe('AdHoc command', function() {
     })
   })
 
+  describe('with environment variables', function() {
+
+    it('should set environment variable in execution', function(done) {
+      var command = new AdHoc().module('shell').hosts('local').args("echo 'hello'").env({'FOO': 'BAR'});
+      var correctEnv = sinon.match(function (options) {
+        return options.env['FOO'] == 'BAR';
+      });
+      expect(command.exec()).to.be.fulfilled.then(function() {
+        expect(spawnSpy).to.be.calledWith('ansible', ['local', '-m', 'shell', '-a', 'echo \'hello\''], correctEnv);
+        done();
+      }).done();
+    });
+  })
+
   describe('with user', function() {
 
     it('should contain user flag in execution', function(done) {
